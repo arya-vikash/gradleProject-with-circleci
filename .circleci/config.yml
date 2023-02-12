@@ -1,0 +1,30 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: openjdk:11
+    steps:
+      - checkout
+      - run:
+          command: ./gradlew build
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  tests:
+    docker:
+      - image: openjdk:11-jre-slim
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          command: ./gradlew test
+workflows:
+  gradle_build_test:
+    jobs:
+      - build
+      - tests:
+          requires:
+            - build
